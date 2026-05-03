@@ -1,123 +1,125 @@
 // Copyright 2021 NNTU-CS
-#include "../include/alg.h"
-#include "../include/tstack.h"
-
-#include <ctype.h>
-#include <string.h>
-
 #include <string>
-#include <stdexcept>
+#include <map>
+#include <cctype>
+#include "tstack.h"
 
 int getPriority(char op) {
-  switch (op) {
-    case '+':
-    case '-':
-      return 1;
-    case '*':
-    case '/':
-      return 2;
-    default:
-      return 0;
-  }
+    switch (op) {
+        case '+':
+        case '-':
+            return 1;
+        case '*':
+        case '/':
+            return 2;
+        default:
+            return 0;
+    }
 }
 
 bool isOperator(char c) {
-  return c == '+' || c == '-' || c == '*' || c == '/';
+    return c == '+' || c == '-' || c == '*' || c == '/';
+}
+
+int applyOperation(int a, int b, char op) {
+    switch (op) {
+        case '+':
+            return a + b;
+        case '-':
+            return a - b;
+        case '*':
+            return a * b;
+        case '/':
+            return a / b;
+        default:
+            throw std::invalid_argument("Invalid operator");
+    }
 }
 
 std::string infx2pstfx(const std::string& inf) {
-  TStack<char, 100> operators;
-  std::string result;
+    TStack<char, 100> operators;
+    std::string result;
 
-  for (size_t i = 0; i < inf.length(); ++i) {
-    char c = inf[i];
+    for (size_t i = 0; i < inf.length(); ++i) {
+        char c = inf[i];
 
-    if (isspace(c)) {
-      continue;
+        if (isspace(c)) {
+            continue;
+        }
+
+        if (isdigit(c)) {
+            while (i < inf.length() && isdigit(inf[i])) {
+                result += inf[i];
+                ++i;
+            }
+            result += ' ';
+            --i;
+        } else if (c == '(') {
+            operators.push(c);
+        } else if (c == ')') {
+            while (!operators.isEmpty() && operators.top() != '(') {
+                result += operators.pop();
+                result += ' ';
+            }
+            if (!operators.isEmpty() && operators.top() == '(') {
+                operators.pop();
+            }
+        } else if (isOperator(c)) {
+            while (!operators.isEmpty() && operators.top() != '(' &&
+                   getPriority(operators.top()) >= getPriority(c)) {
+                result += operators.pop();
+                result += ' ';
+            }
+            operators.push(c);
+        }
     }
 
-    if (isdigit(c)) {
-      while (i < inf.length() && isdigit(inf[i])) {
-        result += inf[i];
-        ++i;
-      }
-      result += ' ';
-      --i;
-    } else if (c == '(') {
-      operators.push(c);
-    } else if (c == ')') {
-      while (!operators.isEmpty() && operators.top() != '(') {
+    while (!operators.isEmpty()) {
         result += operators.pop();
         result += ' ';
-      }
-      if (!operators.isEmpty()) {
-        operators.pop();
-      }
-    } else if (isOperator(c)) {
-      while (!operators.isEmpty() && operators.top() != '(' &&
-             getPriority(operators.top()) >= getPriority(c)) {
-        result += operators.pop();
-        result += ' ';
-      }
-      operators.push(c);
     }
-  }
 
-  while (!operators.isEmpty()) {
-    result += operators.pop();
-    result += ' ';
-  }
+    if (!result.empty() && result.back() == ' ') {
+        result.pop_back();
+    }
 
-  if (!result.empty() && result.back() == ' ') {
-    result.pop_back();
-  }
-
-  return result;
-}
-
-int applyOperator(int a, int b, char op) {
-  switch (op) {
-    case '+':
-      return a + b;
-    case '-':
-      return a - b;
-    case '*':
-      return a * b;
-    case '/':
-      if (b == 0) {
-        throw std::runtime_error("Division by zero");
-      }
-      return a / b;
-    default:
-      throw std::runtime_error("Unknown operator");
-  }
+    return result;
 }
 
 int eval(const std::string& post) {
-  TStack<int, 100> values;
+    TStack<int, 100> values;
 
-  for (size_t i = 0; i < post.length(); ++i) {
-    char c = post[i];
+    for (size_t i = 0; i < post.length(); ++i) {
+        char c = post[i];
 
-    if (isspace(c)) {
-      continue;
+        if (isspace(c)) {
+            continue;
+        }
+
+        if (isdigit(c)) {
+            int number = 0;
+            while (i < post.length() && isdigit(post[i])) {
+                number = number * 10 + (post[i] - '0');
+                ++i;
+            }
+            values.push(number);
+            --i;
+        } else if (isOperator(c)) {
+            if (values.size() < 2) {
+                throw std::runtime_error("Invalid postfix expression");
+            }
+            int b = values.pop();
+            int a = values.pop();
+            int result = applyOperation(a, b, c);
+            values.push(result);
+        } else {
+            throw std::invalid_argument("Invalid character in expression");
+        }
     }
 
-    if (isdigit(c)) {
-      int number = 0;
-      while (i < post.length() && isdigit(post[i])) {
-        number = number * 10 + (post[i] - '0');
-        ++i;
-      }
-      values.push(number);
-      --i;
-    } else if (isOperator(c)) {
-      int b = values.pop();
-      int a = values.pop();
-      int result = applyOperator(a, b, c);
-      values.push(result);
+    if (values.size() != 1) {
+        throw std::runtime_error("Invalid postfix expression");
     }
-  }
 
-  return values.pop();
+    return values.pop();
 }
