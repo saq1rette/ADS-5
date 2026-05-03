@@ -1,5 +1,7 @@
+// Copyright 2021 NNTU-CS
 #include <iostream>
 #include <string>
+
 #include "../include/alg.h"
 
 int main() {
