@@ -2,11 +2,8 @@
 #include "../include/alg.h"
 #include "../include/tstack.h"
 
-// cpplint: disable=build/include_order
-#include <cctype>
 #include <string>
 #include <stdexcept>
-// cpplint: enable=build/include_order
 
 int getPriority(char op) {
   switch (op) {
@@ -25,6 +22,14 @@ bool isOperator(char c) {
   return c == '+' || c == '-' || c == '*' || c == '/';
 }
 
+bool isDigit(char c) {
+  return c >= '0' && c <= '9';
+}
+
+bool isSpace(char c) {
+  return c == ' ';
+}
+
 std::string infx2pstfx(const std::string& inf) {
   TStack<char, 100> operators;
   std::string result;
@@ -32,12 +37,12 @@ std::string infx2pstfx(const std::string& inf) {
   for (size_t i = 0; i < inf.length(); ++i) {
     char c = inf[i];
 
-    if (std::isspace(c)) {
+    if (isSpace(c)) {
       continue;
     }
 
-    if (std::isdigit(c)) {
-      while (i < inf.length() && std::isdigit(inf[i])) {
+    if (isDigit(c)) {
+      while (i < inf.length() && isDigit(inf[i])) {
         result += inf[i];
         ++i;
       }
@@ -99,13 +104,13 @@ int eval(const std::string& post) {
   for (size_t i = 0; i < post.length(); ++i) {
     char c = post[i];
 
-    if (std::isspace(c)) {
+    if (isSpace(c)) {
       continue;
     }
 
-    if (std::isdigit(c)) {
+    if (isDigit(c)) {
       int number = 0;
-      while (i < post.length() && std::isdigit(post[i])) {
+      while (i < post.length() && isDigit(post[i])) {
         number = number * 10 + (post[i] - '0');
         ++i;
       }
