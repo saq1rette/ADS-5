@@ -1,155 +1,147 @@
-// Copyright 2025 NNTU-CS
+#include "../include/alg.h"
 #include "../include/tstack.h"
-#include <string>
 #include <cctype>
+#include <string>
 #include <stdexcept>
 
 // Вспомогательная функция для определения приоритета операторов
 int getPriority(char op) {
-    switch (op) {
-        case '+':
-        case '-':
-            return 1;
-        case '*':
-        case '/':
-            return 2;
-        default:
-            return 0;
-    }
+  switch (op) {
+    case '+':
+    case '-':
+      return 1;
+    case '*':
+    case '/':
+      return 2;
+    default:
+      return 0;
+  }
 }
 
 // Вспомогательная функция для проверки, является ли символ оператором
 bool isOperator(char c) {
-    return c == '+' || c == '-' || c == '*' || c == '/';
+  return c == '+' || c == '-' || c == '*' || c == '/';
 }
 
 // Преобразование выражения в постфиксную форму
-std::string infx2pstfx(const std::string& inf) {
-    TStack<char, 100> operators;
-    std::string result;
-    
-    for (size_t i = 0; i < inf.length(); ++i) {
-        char c = inf[i];
-        
-        // Пропускаем пробелы
-        if (isspace(c)) {
-            continue;
-        }
-        
-        // Если это цифра - читаем всё число
-        if (isdigit(c)) {
-            while (i < inf.length() && isdigit(inf[i])) {
-                result += inf[i];
-                ++i;
-            }
-            result += ' '; // Добавляем пробел после числа
-            --i; // Корректируем индекс, так как цикл увеличит его
-        }
-        // Если открывающая скобка
-        else if (c == '(') {
-            operators.push(c);
-        }
-        // Если закрывающая скобка
-        else if (c == ')') {
-            while (!operators.isEmpty() && operators.top() != '(') {
-                result += operators.pop();
-                result += ' ';
-            }
-            if (!operators.isEmpty() && operators.top() == '(') {
-                operators.pop(); // Удаляем открывающую скобку
-            }
-        }
-        // Если оператор
-        else if (isOperator(c)) {
-            while (!operators.isEmpty() && 
-                   operators.top() != '(' && 
-                   getPriority(operators.top()) >= getPriority(c)) {
-                result += operators.pop();
-                result += ' ';
-            }
-            operators.push(c);
-        }
+std::string infx2pstfx(std::string inf) {
+  TStack<char, 100> operators;
+  std::string result;
+
+  for (size_t i = 0; i < inf.length(); ++i) {
+    char c = inf[i];
+
+    // Пропускаем пробелы
+    if (isspace(c)) {
+      continue;
     }
-    
-    // Выталкиваем оставшиеся операторы из стека
-    while (!operators.isEmpty()) {
+
+    // Если это цифра - читаем всё число
+    if (isdigit(c)) {
+      while (i < inf.length() && isdigit(inf[i])) {
+        result += inf[i];
+        ++i;
+      }
+      result += ' ';
+      --i;
+    } else if (c == '(') {
+      operators.push(c);
+    } else if (c == ')') {
+      while (!operators.isEmpty() && operators.top() != '(') {
         result += operators.pop();
         result += ' ';
+      }
+      if (!operators.isEmpty() && operators.top() == '(') {
+        operators.pop();
+      }
+    } else if (isOperator(c)) {
+      while (!operators.isEmpty() &&
+             operators.top() != '(' &&
+             getPriority(operators.top()) >= getPriority(c)) {
+        result += operators.pop();
+        result += ' ';
+      }
+      operators.push(c);
     }
-    
-    // Удаляем лишний пробел в конце, если он есть
-    if (!result.empty() && result.back() == ' ') {
-        result.pop_back();
-    }
-    
-    return result;
+  }
+
+  // Выталкиваем оставшиеся операторы из стека
+  while (!operators.isEmpty()) {
+    result += operators.pop();
+    result += ' ';
+  }
+
+  // Удаляем лишний пробел в конце, если он есть
+  if (!result.empty() && result.back() == ' ') {
+    result.pop_back();
+  }
+
+  return result;
 }
 
 // Вспомогательная функция для применения оператора
 int applyOperator(int a, int b, char op) {
-    switch (op) {
-        case '+': return a + b;
-        case '-': return a - b;
-        case '*': return a * b;
-        case '/': 
-            if (b == 0) {
-                throw std::runtime_error("Division by zero");
-            }
-            return a / b;
-        default:
-            throw std::runtime_error("Unknown operator");
-    }
+  switch (op) {
+    case '+': return a + b;
+    case '-': return a - b;
+    case '*': return a * b;
+    case '/':
+      if (b == 0) {
+        throw std::runtime_error("Division by zero");
+      }
+      return a / b;
+    default:
+      throw std::runtime_error("Unknown operator");
+  }
 }
 
 // Вычисление выражения, записанного в постфиксной форме
-int eval(const std::string& post) {
-    TStack<int, 100> values;
-    
-    for (size_t i = 0; i < post.length(); ++i) {
-        char c = post[i];
-        
-        // Пропускаем пробелы
-        if (isspace(c)) {
-            continue;
-        }
-        
-        // Если это цифра - читаем всё число
-        if (isdigit(c)) {
-            int number = 0;
-            while (i < post.length() && isdigit(post[i])) {
-                number = number * 10 + (post[i] - '0');
-                ++i;
-            }
-            values.push(number);
-            --i; // Корректируем индекс
-        }
-        // Если это оператор
-        else if (isOperator(c)) {
-            if (values.isEmpty()) {
-                throw std::runtime_error("Invalid postfix expression");
-            }
-            
-            int b = values.pop();
-            if (values.isEmpty()) {
-                throw std::runtime_error("Invalid postfix expression");
-            }
-            int a = values.pop();
-            
-            int result = applyOperator(a, b, c);
-            values.push(result);
-        }
+int eval(std::string post) {
+  TStack<int, 100> values;
+
+  for (size_t i = 0; i < post.length(); ++i) {
+    char c = post[i];
+
+    // Пропускаем пробелы
+    if (isspace(c)) {
+      continue;
     }
-    
-    if (values.isEmpty()) {
-        throw std::runtime_error("No result");
+
+    // Если это цифра - читаем всё число
+    if (isdigit(c)) {
+      int number = 0;
+      while (i < post.length() && isdigit(post[i])) {
+        number = number * 10 + (post[i] - '0');
+        ++i;
+      }
+      values.push(number);
+      --i;
+    } else if (isOperator(c)) {
+      if (values.isEmpty()) {
+        throw std::runtime_error("Invalid postfix expression");
+      }
+
+      int b = values.pop();
+      if (values.isEmpty()) {
+        throw std::runtime_error("Invalid postfix expression");
+      }
+      int a = values.pop();
+
+      int result = applyOperator(a, b, c);
+      values.push(result);
     }
-    
-    int finalResult = values.pop();
-    
-    // Проверяем, что стек пуст
-    if (!values.isEmpty()) {
-        throw std::runtime_error("Too many operands");
-    }
-    
-    return finalResult;
+  }
+
+  if (values.isEmpty()) {
+    throw std::runtime_error("No result");
+  }
+
+  int finalResult = values.pop();
+
+  // Проверяем, что стек пуст
+  if (!values.isEmpty()) {
+    throw std::runtime_error("Too many operands");
+  }
+
+  return finalResult;
 }
