@@ -2,9 +2,8 @@
 #include "../include/alg.h"
 #include "../include/tstack.h"
 
-#include <cctype>
-#include <stdexcept>
 #include <string>
+#include <stdexcept>
 
 int getPriority(char op) {
   switch (op) {
@@ -30,12 +29,12 @@ std::string infx2pstfx(const std::string& inf) {
   for (size_t i = 0; i < inf.length(); ++i) {
     char c = inf[i];
 
-    if (std::isspace(c)) {
+    if (c == ' ') {
       continue;
     }
 
-    if (std::isdigit(c)) {
-      while (i < inf.length() && std::isdigit(inf[i])) {
+    if (c >= '0' && c <= '9') {
+      while (i < inf.length() && inf[i] >= '0' && inf[i] <= '9') {
         result += inf[i];
         ++i;
       }
@@ -97,13 +96,13 @@ int eval(const std::string& post) {
   for (size_t i = 0; i < post.length(); ++i) {
     char c = post[i];
 
-    if (std::isspace(c)) {
+    if (c == ' ') {
       continue;
     }
 
-    if (std::isdigit(c)) {
+    if (c >= '0' && c <= '9') {
       int number = 0;
-      while (i < post.length() && std::isdigit(post[i])) {
+      while (i < post.length() && post[i] >= '0' && post[i] <= '9') {
         number = number * 10 + (post[i] - '0');
         ++i;
       }
