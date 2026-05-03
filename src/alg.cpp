@@ -1,5 +1,6 @@
 #include "../include/alg.h"
 #include "../include/tstack.h"
+
 #include <cctype>
 #include <string>
 #include <stdexcept>
@@ -24,7 +25,7 @@ bool isOperator(char c) {
 }
 
 // Преобразование выражения в постфиксную форму
-std::string infx2pstfx(std::string inf) {
+std::string infx2pstfx(const std::string& inf) {
   TStack<char, 100> operators;
   std::string result;
 
@@ -96,7 +97,7 @@ int applyOperator(int a, int b, char op) {
 }
 
 // Вычисление выражения, записанного в постфиксной форме
-int eval(std::string post) {
+int eval(const std::string& post) {
   TStack<int, 100> values;
 
   for (size_t i = 0; i < post.length(); ++i) {
