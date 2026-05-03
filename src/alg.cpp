@@ -1,3 +1,4 @@
+// Copyright 2021 NNTU-CS
 #include "../include/alg.h"
 #include "../include/tstack.h"
 
@@ -5,7 +6,6 @@
 #include <string>
 #include <stdexcept>
 
-// Вспомогательная функция для определения приоритета операторов
 int getPriority(char op) {
   switch (op) {
     case '+':
@@ -19,25 +19,19 @@ int getPriority(char op) {
   }
 }
 
-// Вспомогательная функция для проверки, является ли символ оператором
 bool isOperator(char c) {
   return c == '+' || c == '-' || c == '*' || c == '/';
 }
 
-// Преобразование выражения в постфиксную форму
 std::string infx2pstfx(const std::string& inf) {
   TStack<char, 100> operators;
   std::string result;
 
   for (size_t i = 0; i < inf.length(); ++i) {
     char c = inf[i];
-
-    // Пропускаем пробелы
     if (isspace(c)) {
       continue;
     }
-
-    // Если это цифра - читаем всё число
     if (isdigit(c)) {
       while (i < inf.length() && isdigit(inf[i])) {
         result += inf[i];
@@ -66,13 +60,11 @@ std::string infx2pstfx(const std::string& inf) {
     }
   }
 
-  // Выталкиваем оставшиеся операторы из стека
   while (!operators.isEmpty()) {
     result += operators.pop();
     result += ' ';
   }
 
-  // Удаляем лишний пробел в конце, если он есть
   if (!result.empty() && result.back() == ' ') {
     result.pop_back();
   }
@@ -80,7 +72,6 @@ std::string infx2pstfx(const std::string& inf) {
   return result;
 }
 
-// Вспомогательная функция для применения оператора
 int applyOperator(int a, int b, char op) {
   switch (op) {
     case '+': return a + b;
@@ -96,19 +87,14 @@ int applyOperator(int a, int b, char op) {
   }
 }
 
-// Вычисление выражения, записанного в постфиксной форме
 int eval(const std::string& post) {
   TStack<int, 100> values;
 
   for (size_t i = 0; i < post.length(); ++i) {
     char c = post[i];
-
-    // Пропускаем пробелы
     if (isspace(c)) {
       continue;
     }
-
-    // Если это цифра - читаем всё число
     if (isdigit(c)) {
       int number = 0;
       while (i < post.length() && isdigit(post[i])) {
@@ -121,13 +107,11 @@ int eval(const std::string& post) {
       if (values.isEmpty()) {
         throw std::runtime_error("Invalid postfix expression");
       }
-
       int b = values.pop();
       if (values.isEmpty()) {
         throw std::runtime_error("Invalid postfix expression");
       }
       int a = values.pop();
-
       int result = applyOperator(a, b, c);
       values.push(result);
     }
@@ -138,8 +122,6 @@ int eval(const std::string& post) {
   }
 
   int finalResult = values.pop();
-
-  // Проверяем, что стек пуст
   if (!values.isEmpty()) {
     throw std::runtime_error("Too many operands");
   }
