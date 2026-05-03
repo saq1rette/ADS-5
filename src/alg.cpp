@@ -1,9 +1,7 @@
+// Copyright 2021 NNTU-CS
 #include "../include/alg.h"
 #include "../include/tstack.h"
-
-#include <cstddef>      // C system header (по мнению cpplint)
-
-#include <string>       // C++ system headers
+#include <string>
 #include <stdexcept>
 
 int getPriority(char op) {
