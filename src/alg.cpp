@@ -3,6 +3,7 @@
 #include "../include/tstack.h"
 
 #include <cctype>
+
 #include <string>
 #include <stdexcept>
 
