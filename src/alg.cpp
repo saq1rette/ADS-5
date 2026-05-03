@@ -4,8 +4,8 @@
 
 #include <cctype>
 
-#include <string>
 #include <stdexcept>
+#include <string>
 
 int getPriority(char op) {
   switch (op) {
