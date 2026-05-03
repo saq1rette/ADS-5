@@ -3,7 +3,6 @@
 #include "../include/tstack.h"
 
 #include <cctype>
-
 #include <string>
 #include <stdexcept>
 
@@ -30,11 +29,13 @@ std::string infx2pstfx(const std::string& inf) {
 
   for (size_t i = 0; i < inf.length(); ++i) {
     char c = inf[i];
-    if (isspace(c)) {
+
+    if (std::isspace(c)) {
       continue;
     }
-    if (isdigit(c)) {
-      while (i < inf.length() && isdigit(inf[i])) {
+
+    if (std::isdigit(c)) {
+      while (i < inf.length() && std::isdigit(inf[i])) {
         result += inf[i];
         ++i;
       }
@@ -47,12 +48,11 @@ std::string infx2pstfx(const std::string& inf) {
         result += operators.pop();
         result += ' ';
       }
-      if (!operators.isEmpty() && operators.top() == '(') {
+      if (!operators.isEmpty()) {
         operators.pop();
       }
     } else if (isOperator(c)) {
-      while (!operators.isEmpty() &&
-             operators.top() != '(' &&
+      while (!operators.isEmpty() && operators.top() != '(' &&
              getPriority(operators.top()) >= getPriority(c)) {
         result += operators.pop();
         result += ' ';
@@ -75,9 +75,12 @@ std::string infx2pstfx(const std::string& inf) {
 
 int applyOperator(int a, int b, char op) {
   switch (op) {
-    case '+': return a + b;
-    case '-': return a - b;
-    case '*': return a * b;
+    case '+':
+      return a + b;
+    case '-':
+      return a - b;
+    case '*':
+      return a * b;
     case '/':
       if (b == 0) {
         throw std::runtime_error("Division by zero");
@@ -93,39 +96,26 @@ int eval(const std::string& post) {
 
   for (size_t i = 0; i < post.length(); ++i) {
     char c = post[i];
-    if (isspace(c)) {
+
+    if (std::isspace(c)) {
       continue;
     }
-    if (isdigit(c)) {
+
+    if (std::isdigit(c)) {
       int number = 0;
-      while (i < post.length() && isdigit(post[i])) {
+      while (i < post.length() && std::isdigit(post[i])) {
         number = number * 10 + (post[i] - '0');
         ++i;
       }
       values.push(number);
       --i;
     } else if (isOperator(c)) {
-      if (values.isEmpty()) {
-        throw std::runtime_error("Invalid postfix expression");
-      }
       int b = values.pop();
-      if (values.isEmpty()) {
-        throw std::runtime_error("Invalid postfix expression");
-      }
       int a = values.pop();
       int result = applyOperator(a, b, c);
       values.push(result);
     }
   }
 
-  if (values.isEmpty()) {
-    throw std::runtime_error("No result");
-  }
-
-  int finalResult = values.pop();
-  if (!values.isEmpty()) {
-    throw std::runtime_error("Too many operands");
-  }
-
-  return finalResult;
+  return values.pop();
 }
