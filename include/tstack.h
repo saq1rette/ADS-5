@@ -9,11 +9,7 @@ class TStack {
   int top_idx;
 
  public:
-  TStack() : top_idx(-1) {
-    for (int i = 0; i < N; ++i) {
-      data[i] = T();
-    }
-  }
+  TStack() : top_idx(-1) {}
 
   bool isEmpty() const {
     return top_idx == -1;
