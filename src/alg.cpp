@@ -1,9 +1,11 @@
 // Copyright 2021 NNTU-CS
 #include "../include/alg.h"
 #include "../include/tstack.h"
+
 #include <cctype>
-#include <stdexcept>
+
 #include <string>
+#include <stdexcept>
 
 int getPriority(char op) {
   switch (op) {
@@ -29,12 +31,12 @@ std::string infx2pstfx(const std::string& inf) {
   for (size_t i = 0; i < inf.length(); ++i) {
     char c = inf[i];
 
-    if (isspace(c)) {
+    if (std::isspace(c)) {
       continue;
     }
 
-    if (isdigit(c)) {
-      while (i < inf.length() && isdigit(inf[i])) {
+    if (std::isdigit(c)) {
+      while (i < inf.length() && std::isdigit(inf[i])) {
         result += inf[i];
         ++i;
       }
@@ -96,13 +98,13 @@ int eval(const std::string& post) {
   for (size_t i = 0; i < post.length(); ++i) {
     char c = post[i];
 
-    if (isspace(c)) {
+    if (std::isspace(c)) {
       continue;
     }
 
-    if (isdigit(c)) {
+    if (std::isdigit(c)) {
       int number = 0;
-      while (i < post.length() && isdigit(post[i])) {
+      while (i < post.length() && std::isdigit(post[i])) {
         number = number * 10 + (post[i] - '0');
         ++i;
       }
