@@ -1,6 +1,9 @@
 // Copyright 2021 NNTU-CS
 #include "../include/alg.h"
 #include "../include/tstack.h"
+
+#include <cstddef>
+
 #include <string>
 #include <stdexcept>
 
