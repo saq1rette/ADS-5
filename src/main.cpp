@@ -5,7 +5,6 @@
 #include "../include/alg.h"
 
 int main() {
-  // Пример 1
   std::string infix1 = "(2+2)*(3-1)";
   std::string postfix1 = infx2pstfx(infix1);
   std::cout << "Infix: " << infix1 << std::endl;
@@ -13,7 +12,6 @@ int main() {
   std::cout << "Result: " << eval(postfix1) << std::endl;
   std::cout << std::endl;
 
-  // Пример 2
   std::string infix2 = "100+200/2";
   std::string postfix2 = infx2pstfx(infix2);
   std::cout << "Infix: " << infix2 << std::endl;
@@ -21,7 +19,6 @@ int main() {
   std::cout << "Result: " << eval(postfix2) << std::endl;
   std::cout << std::endl;
 
-  // Пример 3
   std::string infix3 = "(10+2)*(3-1)/2";
   std::string postfix3 = infx2pstfx(infix3);
   std::cout << "Infix: " << infix3 << std::endl;
