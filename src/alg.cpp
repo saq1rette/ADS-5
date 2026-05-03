@@ -2,7 +2,8 @@
 #include "../include/alg.h"
 #include "../include/tstack.h"
 
-#include <cstddef>
+#include <ctype.h>
+#include <string.h>
 
 #include <string>
 #include <stdexcept>
@@ -24,14 +25,6 @@ bool isOperator(char c) {
   return c == '+' || c == '-' || c == '*' || c == '/';
 }
 
-bool isDigit(char c) {
-  return c >= '0' && c <= '9';
-}
-
-bool isSpace(char c) {
-  return c == ' ';
-}
-
 std::string infx2pstfx(const std::string& inf) {
   TStack<char, 100> operators;
   std::string result;
@@ -39,12 +32,12 @@ std::string infx2pstfx(const std::string& inf) {
   for (size_t i = 0; i < inf.length(); ++i) {
     char c = inf[i];
 
-    if (isSpace(c)) {
+    if (isspace(c)) {
       continue;
     }
 
-    if (isDigit(c)) {
-      while (i < inf.length() && isDigit(inf[i])) {
+    if (isdigit(c)) {
+      while (i < inf.length() && isdigit(inf[i])) {
         result += inf[i];
         ++i;
       }
@@ -106,13 +99,13 @@ int eval(const std::string& post) {
   for (size_t i = 0; i < post.length(); ++i) {
     char c = post[i];
 
-    if (isSpace(c)) {
+    if (isspace(c)) {
       continue;
     }
 
-    if (isDigit(c)) {
+    if (isdigit(c)) {
       int number = 0;
-      while (i < post.length() && isDigit(post[i])) {
+      while (i < post.length() && isdigit(post[i])) {
         number = number * 10 + (post[i] - '0');
         ++i;
       }
